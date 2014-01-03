@@ -2,35 +2,124 @@
 <html>
 <head>
     <title>Office Remote</title>
-    <meta name = "viewport" content = "user-scalable = no">
-    <script src="Scripts/jquery-1.9.1.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <link rel="stylesheet" href="Content/jquery.mobile-1.4.0.css" />
+
+    <script src="Scripts/jquery-1.8.2.min.js"></script>
     <script src="Scripts/hammer.js"></script>
     <script src="Scripts/jquery.specialevent.hammer.js"></script>
+    <script src="Scripts/jquery.mobile-1.4.0.min.js"></script>
     <style>
         #swipeme {
-            border: 3px dashed orange;
+            text-align: center;
+            /*border: 3px dashed orange;
             line-height: 500px;
             height: 100%;
+            font-size: 2em;
+            width: 100%;*/
+        }
+        #touchme {
             text-align: center;
-            font-size: 3em;
-            width: 100%;
+        }
+
+        .fileinput-button {
+            position: relative;
+            overflow: hidden;
+            float: left;
+            margin-right: 4px;
+        }
+
+        .fileinput-button input {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 0;
+            opacity: 0;
+            filter: alpha(opacity=0);
+            transform: translate(-300px, 0) scale(4);
+            font-size: 23px;
+            direction: ltr;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div id="swipeme">
-        Touch me :)
+
+    <div id="mainPage" data-role="page" >
+
+        <div data-role="header" data-theme="b">
+            <h1>Gesture Control</h1>
+        </div>
+
+        <div id="swipeme" data-role="content">
+            <span style="vertical-align:middle"><h1>Touch here</h1></span>
+        </div>
+
+        <div data-role="footer" data-theme="a">
+<!--            <span class="ui-btn ui-corner-all fileinput-button">-->
+                <a href="#controlPage" data-transition="flip" class="ui-btn">Mouse Control</a>
+            <!--</span>-->
+            <h1>&nbsp;</h1>
+        </div>
+
     </div>
-    <div id="output">
+
+    <div id="controlPage" data-role="page">
+
+        <div data-role="header" data-theme="b">
+            <h1>Gesture Control</h1>
+        </div>
+
+        <div id="touchme" data-role="content">
+            <span style="vertical-align:middle"><h1>Touch here</h1></span>
+        </div>
+
+        <div data-role="footer">
+            <span class="ui-btn ui-icon-plus ui-btn-icon-left ui-corner-all fileinput-button">
+                <span>Photo</span>
+                <input id="image-picker" type="file" accept="image/*" data-role="none" />
+            </span>
+            <h1>&nbsp;</h1>
+        </div>
+
     </div>
+
+    <div id="myDialog" data-role="page" data-dialog="true">
+        <div data-role="header" data-theme="b">
+		<h1>About</h1>
+		</div>
+
+		<div role="main" class="ui-content">
+		<h1>Office Remote <br /> Ver 0.0.1</h1>
+		<p>This App is for MODC 2013-2014 Hack Day demo only. Designed by Chao Xiang and Jianming Zhao. <br /><br />Where shall we start?</p>
+			<a href="#mainPage" data-transition="turn" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Gesture Control</a>
+			<a href="#controlPage" data-transition="flip" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Mouse Control</a>
+		</div>
+	</div>
+    
     <script>
         (function ($) {
-            // alert(window.location.hostname);
+            //alert(window.location.hostname);
 
             // send connect message
             //$.ajax({
             //    url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx"
             //});
+            var firstTime = 1;
+            if (firstTime == 1) {
+                setTimeout(function () { $.mobile.changePage("#myDialog", { transition: 'pop' }); }, 10);
+                firstTime = 0;
+            }
+
+            $(document).delegate('#mainPage', 'pageshow', function () {
+                
+            });
+
+            var the_height = ($(window).height() - $("#mainPage").find('[data-role="header"]').height() - $("#mainPage").find('[data-role="footer"]').height() - 120);
+            $("#mainPage").height($(window).height()).find('[data-role="content"]').height(the_height);
+            $("#swipeme").css("line-height", (the_height - 45) + "px");
+            $("#touchme").css("line-height", (the_height - 45) + "px");
 
             document.ontouchmove = function (event) {
                 event.preventDefault();
@@ -44,7 +133,6 @@
             // hold tap swipe doubletap transformstart transform transformend dragstart drag dragend release
             $sw.on('hold tap swipe doubletap dragstart drag dragend', function (event) {
                 event.preventDefault();
-
                 var offsetX = (event.distanceX - prevDistanceX);
                 var offsetY = (event.distanceY - prevDistanceY) * 3;
 
@@ -73,15 +161,15 @@
                         url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
                         data: {
                             type: myType,
-                            touches: event.touches.length,
+                            /*touches: event.touches.length,*/
                             clicks: clicks,
                             direction: event.direction,
-                            offset_x: offsetX,
+                            offset_x: offsetX * 4,
                             offset_y: offsetY
                         }
                     });
 
-                $output.prepend("Type: " + event.type + ", Fingers: " + event.touches.length + ", Direction: " + event.direction + ", Offset: " + offsetX + "," + offsetY + "<br/>");
+                console.log("Type: " + event.type + ", Direction: " + event.direction + ", Offset: " + offsetX + "," + offsetY);
 
                 prevDistanceX = event.distanceX;
                 prevDistanceY = event.distanceY;

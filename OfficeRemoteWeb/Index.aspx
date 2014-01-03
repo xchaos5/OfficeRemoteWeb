@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="Content/jquery.mobile-1.3.1.css" />
 
     <!-- jQuery and jQuery Mobile -->
-    <script src="Scripts/jquery-1.9.1.min.js"></script>
+    <script src="Scripts/jquery-1.10.2.min.js"></script>
     <script src="Scripts/jquery.mobile-1.3.1.min.js"></script>
 
     <title></title>
