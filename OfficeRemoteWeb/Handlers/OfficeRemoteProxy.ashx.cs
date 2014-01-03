@@ -44,10 +44,10 @@ namespace OfficeRemoteWeb.Handlers
             //context.Response.Write("Hello World");
             string gesType = context.Request["type"].ToString();
             string gesDirection = context.Request["direction"] == null ? "" : context.Request["direction"].ToString();
-            int offsetX = 0;
-            Int32.TryParse(context.Request["offset_x"].ToString(), out offsetX);
-            int offsetY = 0;
-            Int32.TryParse(context.Request["offset_y"].ToString(), out offsetY);
+            double offsetX = 0;
+            Double.TryParse(context.Request["offset_x"].ToString(), out offsetX);
+            double offsetY = 0;
+            Double.TryParse(context.Request["offset_y"].ToString(), out offsetY);
 
             PPt.Application pptApplication = null;
             PPt.Presentation presentation = null;
@@ -56,39 +56,38 @@ namespace OfficeRemoteWeb.Handlers
             int slidescount = 0;
             int slideIndex = 0;
 
-
-            try
+            if (gesType == "swipe")
             {
-                // Get Running PowerPoint Application object 
-                pptApplication = System.Runtime.InteropServices.Marshal.GetActiveObject("PowerPoint.Application") as PPt.Application;
-            }
-            catch
-            {
-
-            }
-            if (pptApplication != null)
-            {
-                // Get Presentation Object 
-                presentation = pptApplication.ActivePresentation;
-                // Get Slide collection object 
-                slides = presentation.Slides;
-                // Get Slide count 
-                slidescount = slides.Count;
-                // Get current selected slide  
                 try
                 {
-                    // Get selected slide object in normal view 
-                    slide = slides[pptApplication.ActiveWindow.Selection.SlideRange.SlideNumber];
+                    // Get Running PowerPoint Application object 
+                    pptApplication = System.Runtime.InteropServices.Marshal.GetActiveObject("PowerPoint.Application") as PPt.Application;
                 }
                 catch
                 {
-                    // Get selected slide object in reading view 
-                    slide = pptApplication.SlideShowWindows[1].View.Slide;
-                }
-            }
 
-            if (gesType == "swipe")
-            {
+                }
+                if (pptApplication != null)
+                {
+                    // Get Presentation Object 
+                    presentation = pptApplication.ActivePresentation;
+                    // Get Slide collection object 
+                    slides = presentation.Slides;
+                    // Get Slide count 
+                    slidescount = slides.Count;
+                    // Get current selected slide  
+                    try
+                    {
+                        // Get selected slide object in normal view 
+                        slide = slides[pptApplication.ActiveWindow.Selection.SlideRange.SlideNumber];
+                    }
+                    catch
+                    {
+                        // Get selected slide object in reading view 
+                        slide = pptApplication.SlideShowWindows[1].View.Slide;
+                    }
+                }
+
                 if (gesDirection == "left")
                 {
                     slideIndex = slide.SlideIndex - 1;
@@ -163,7 +162,41 @@ namespace OfficeRemoteWeb.Handlers
             }
             else if (gesType == "drag")
             {
-                mouse_event(MOUSEEVENTF_MOVE, offsetX, offsetY, 0, 0);
+                mouse_event(MOUSEEVENTF_MOVE, (int)offsetX, (int)offsetY, 0, 0);
+            }
+            else if (gesType == "run")
+            {
+                try
+                {
+                    pptApplication = System.Runtime.InteropServices.Marshal.GetActiveObject("PowerPoint.Application") as PPt.Application;
+                }
+                catch
+                {
+
+                }
+                if (pptApplication != null)
+                {
+                    presentation = pptApplication.ActivePresentation;
+                    if (presentation != null)
+                        presentation.SlideShowSettings.Run();
+                }
+            }
+            else if (gesType == "stop")
+            {
+                try
+                {
+                    pptApplication = System.Runtime.InteropServices.Marshal.GetActiveObject("PowerPoint.Application") as PPt.Application;
+                }
+                catch
+                {
+
+                }
+                if (pptApplication != null)
+                {
+                    presentation = pptApplication.ActivePresentation;
+                    if (presentation != null)
+                        presentation.SlideShowWindow.View.Exit();
+                }
             }
         }
 
