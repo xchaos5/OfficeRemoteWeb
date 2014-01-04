@@ -49,25 +49,25 @@
     <div id="mainPage" data-role="page" >
 
         <div data-role="header" data-theme="b" style="background-color:#FF3C00; border:0px">
-            <a href="" style="top:2px; background-color: transparent; border:0px" class="ui-btn btnHome"><img src="images/office_logo.png" /></a>
-            <h1>Gesture</h1>
-            
-                <span id="btnPlay" class="ui-btn ui-corner-all fileinput-button" style="position: absolute; top:-2px; right:0px; background-color:#FF3C00; border:0px">
-                    <span id="spSlideShow">Play</span>
-                    <input id="image-picker" type="file" accept="image/*" data-role="none" />
-                </span>
-            
+            <a href="" style="top:4px; background-color: transparent; border:0px" class="ui-btn btnHome"><img src="images/office_logo.png" /></a>
+            <h1>Slideshow</h1>
+            <span class="ui-btn ui-icon-plus ui-btn-icon-left ui-corner-all fileinput-button" style="position: absolute; top: -1px; right: 0px; background-color: #FF3C00; border: 0px">
+                <span>Photo</span>
+                <input id="image-picker" type="file" accept="image/*" data-role="none" />
+            </span>
         </div>
 
         <div id="swipeme" data-role="content">
-            <span style="vertical-align:middle"><h1>Swipe here</h1></span>
+            <span style="vertical-align:middle; color:gray"><h1>Swipe here</h1></span>
         </div>
 
         <div data-role="footer" data-theme="a" style="text-align:center;">
 <!--            <span class="ui-btn ui-corner-all fileinput-button">-->
-            <a href="#controlPage" style="top:0px;" data-transition="flip" class="ui-btn">Mouse Control</a>
+            <a href="#controlPage" style="top:0px;" data-transition="flip" class="ui-btn">Trackpad</a>
             <!--</span>-->
-            <h1>&nbsp;</h1>
+            <span id="btnPlay" class="ui-btn ui-corner-all fileinput-button" style="position: absolute; bottom:2px; left:2px; background-color:transparent; border:0px">
+                <span id="spSlideShow">Play</span>
+            </span>
         </div>
 
     </div>
@@ -75,21 +75,19 @@
     <div id="controlPage" data-role="page">
 
         <div data-role="header" data-theme="b" style="background-color:#1E82CC; border:0px">
-            <a href="" style="top: 2px; background-color: transparent; border:0px" class="ui-btn btnHome"><img src="images/office_logo.png" /></a>
-            <h1>Mouse</h1>
-            <span class="ui-btn ui-icon-plus ui-btn-icon-left ui-corner-all fileinput-button" style="position: absolute; top:-2px; right:0px; background-color:#1E82CC; border:0px">
-                <span>Photo</span>
-                <input id="image-picker" type="file" accept="image/*" data-role="none" />
+            <a href="" style="top: 4px; background-color: transparent; border:0px" class="ui-btn btnHome"><img src="images/office_logo.png" /></a>
+            <h1>Trackpad</h1>
+            <span id="btnStart" class="ui-btn ui-corner-all fileinput-button" style="position: absolute; top:-2px; right:2px; background-color:transparent; border:0px">
+                <span id="spSlideShow">Start</span>
             </span>
         </div>
 
         <div id="touchme" data-role="content">
-            <span style="vertical-align:middle"><h1>Drag here</h1></span>
+            <span style="vertical-align:middle; color:gray"><h1>Drag here</h1></span>
         </div>
 
         <div data-role="footer" style="text-align:center">
-            <a href="#mainPage" style="top:0px;" data-transition="flip" class="ui-btn">Gesture Control</a>
-            <h1>&nbsp;</h1>
+            <a href="#mainPage" style="top:0px;" data-transition="flip" class="ui-btn">Slideshow</a>
         </div>
 
     </div>
@@ -102,19 +100,43 @@
 		<div role="main" class="ui-content">
 		<h1>Office Remote <br /> Ver 0.0.1</h1>
 		<p>This App is for MODC 2013-2014 Hack Day demo only. Designed by Chao Xiang and Jianming Zhao. <br /><br />Where shall we start?</p>
-			<a href="#mainPage" data-transition="fade" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Gesture Control</a>
-			<a href="#controlPage" data-transition="fade" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Mouse Control</a>
+			<a href="#mainPage" data-transition="fade" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Slideshow</a>
+			<a href="#controlPage" data-transition="fade" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Trackpad</a>
 		</div>
 	</div>
     
     <script>
         (function ($) {
 
-            var firstTime = 1;
-            if (firstTime == 1) {
-                setTimeout(function () { $.mobile.changePage("#myDialog", { transition: 'pop' }); }, 10);
-                firstTime = 0;
-            }
+            //var firstTime = 1;
+            //if (firstTime == 1) {
+            //    setTimeout(function () { $.mobile.changePage("#myDialog", { transition: 'pop' }); }, 10);
+            //    firstTime = 0;
+            //}
+
+            $("#image-picker").change(function (event) {
+                var files = event.target.files;
+                if (files.length > 0) {
+                    var filename = event.target.files[0];
+                    var fr = new FileReader();
+                    fr.onload = function imageHandler(e) {
+                        //var store = document.getElementById('imgstore');
+                        //store.innerHTML = '<img src="' + e.target.result + '">';
+                        $.ajax({
+                            type: "POST",
+                            url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                            data: {
+                                type: "upload",
+                                file: e.target.result,
+                                offset_x: 0,
+                                offset_y: 0
+                            }
+                        });
+                    };
+                    fr.readAsDataURL(filename);
+
+                }
+            });
 
             $(".btnHome").click(function (e) {
                 e.stopImmediatePropagation();
@@ -140,16 +162,29 @@
                     url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
                     data: {
                         type: eventType,
-                        /*touches: event.touches.length,*/
                         offset_x: 0,
                         offset_y: 0
                     }
                 });
             });
 
-            $(document).delegate('#mainPage', 'pageshow', function () {
-                
+            $("#btnStart").click(function (e) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+
+                $.ajax({
+                    url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                    data: {
+                        type: "win",
+                        offset_x: 0,
+                        offset_y: 0
+                    }
+                });
             });
+
+            //$(document).delegate('#mainPage', 'pageshow', function () {
+                
+            //});
 
             var the_height = ($(window).height() - $("#mainPage").find('[data-role="header"]').height() - $("#mainPage").find('[data-role="footer"]').height() - 120);
             $("#mainPage").height($(window).height()).find('[data-role="content"]').height(the_height);
@@ -167,6 +202,7 @@
             var prevDistanceY = 0;
 
             Hammer(sm).on('swipe', function (event) {
+                // slideshow control
                 event.gesture.preventDefault();
 
                 var myType = event.type;
@@ -184,41 +220,141 @@
                 console.log("Type: " + event.type + ", Direction: " + event.direction);
             });
 
+            Hammer(sm).on('pinchin', function (event) {
+                event.gesture.preventDefault();
+                $.ajax({
+                    url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                    data: {
+                        type: 'pinchin',
+                        direction: event.gesture.direction,
+                        offset_x: 0,
+                        offset_y: 0
+                    }
+                });
+            });
+
+            Hammer(sm).on('pinchout', function (event) {
+                event.gesture.preventDefault();
+                $.ajax({
+                    url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                    data: {
+                        type: 'pinchout',
+                        direction: event.gesture.direction,
+                        offset_x: 0,
+                        offset_y: 0
+                    }
+                });
+            });
+
             Hammer(tm, { drag_max_touches: 3 }).on('drag', function (event) {
+                // mouse control
                 event.gesture.preventDefault();
 
                 var offsetX = (event.gesture.deltaX - prevDistanceX) * 3;
                 var offsetY = (event.gesture.deltaY - prevDistanceY) * 3;
 
-                var myType = event.type;
-                var clicks = 1;
-                var skip = false;
-
-                $.ajax({
-                    url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
-                    data: {
-                        type: myType,
-                        /*touches: event.touches.length,*/
-                        clicks: clicks,
-                        direction: event.gesture.direction,
-                        offset_x: offsetX,
-                        offset_y: offsetY
-                    }
-                });
+                if (event.gesture.touches.length == 1) {
+                    $.ajax({
+                        url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                        data: {
+                            type: event.type,
+                            direction: event.gesture.direction,
+                            offset_x: offsetX,
+                            offset_y: offsetY
+                        }
+                    });
+                }
 
                 console.log("Type: " + event.type + ", Direction: " + event.gesture.direction + ", Offset: " + offsetX + "," + offsetY + ",touches: " + event.gesture.touches.length);
-                //if (event.gesture.touches.length > 1)
-                //    alert(event.gesture.touches.length);
                 console.log(event);
 
                 prevDistanceX = event.gesture.deltaX;
                 prevDistanceY = event.gesture.deltaY;
             });
 
-            Hammer(tm).on('dragend', function (event) {
+            Hammer(tm, { drag_max_touches: 3 }).on('dragup', function (event) {
+                // scroll up control
                 event.gesture.preventDefault();
-                prevDistanceX = 0;
-                prevDistanceY = 0;
+
+                if (event.gesture.touches.length == 2) {
+                    $.ajax({
+                        url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                        data: {
+                            type: "scroll",
+                            direction: event.gesture.direction,
+                            offset_x: 0,
+                            offset_y: event.gesture.distance
+                        }
+                    });
+                }
+            });
+
+            Hammer(tm, { drag_max_touches: 3 }).on('dragdown', function (event) {
+                // scroll down control
+                event.gesture.preventDefault();
+
+                if (event.gesture.touches.length == 2) {
+                    $.ajax({
+                        url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                        data: {
+                            type: "scroll",
+                            direction: event.gesture.direction,
+                            offset_x: 0,
+                            offset_y: -event.gesture.distance
+                        }
+                    });
+                }
+            });
+
+            Hammer(tm, { drag_max_touches: 3 }).on('dragleft', function (event) {
+                // scroll left control
+                event.gesture.preventDefault();
+
+                if (event.gesture.touches.length == 2) {
+                    $.ajax({
+                        url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                        data: {
+                            type: "Hscroll",
+                            /*touches: event.touches.length,*/
+                            direction: event.gesture.direction,
+                            offset_x: -event.gesture.distance * 3,
+                            offset_y: 0
+                        }
+                    });
+                }
+            });
+
+            Hammer(tm, { drag_max_touches: 3 }).on('dragright', function (event) {
+                // scroll right control
+                event.gesture.preventDefault();
+
+                if (event.gesture.touches.length == 2) {
+                    //alert(123);
+                    $.ajax({
+                        url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                        data: {
+                            type: "Hscroll",
+                            /*touches: event.touches.length,*/
+                            direction: event.gesture.direction,
+                            offset_x: event.gesture.distance * 3,
+                            offset_y: 0
+                        }
+                    });
+                }
+            });
+
+            Hammer(tm, { drag_max_touches: 3 }).on('dragend', function (event) {
+                event.gesture.preventDefault();
+
+                if (event.gesture.touches.length == 1) {
+                    prevDistanceX = 0;
+                    prevDistanceY = 0;
+                }
+
+                //if (event.gesture.touches.length == 3 && (event.gesture.direction == "up" || event.gesture.direction == "down"))
+                //{
+
+                //}
             });
 
             Hammer(tm).on('tap', function (event) {
@@ -228,7 +364,6 @@
                     url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
                     data: {
                         type: event.type,
-                        /*touches: event.touches.length,*/
                         direction: event.gesture.direction,
                         offset_x: 0,
                         offset_y: 0

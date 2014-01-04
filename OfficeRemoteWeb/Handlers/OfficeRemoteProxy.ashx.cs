@@ -7,6 +7,9 @@ using System.Windows.Forms;
 using Microsoft.Office.Core;
 using PPt = Microsoft.Office.Interop.PowerPoint;
 using System.Runtime.InteropServices;
+using System.IO;
+using System.Drawing;
+using System.Net;
 
 namespace OfficeRemoteWeb.Handlers
 {
@@ -22,7 +25,7 @@ namespace OfficeRemoteWeb.Handlers
         public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int extraInfo);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
-        public static extern short MapVirtualKey(int wCode, int wMapType);
+        public static extern byte MapVirtualKey(int wCode, int wMapType);
 
         // constants for the mouse_input() API function
         private const int MOUSEEVENTF_MOVE = 0x0001;
@@ -33,10 +36,27 @@ namespace OfficeRemoteWeb.Handlers
         private const int MOUSEEVENTF_MIDDLEDOWN = 0x0020;
         private const int MOUSEEVENTF_MIDDLEUP = 0x0040;
         private const int MOUSEEVENTF_ABSOLUTE = 0x8000;
+        private const int MOUSEEVENTF_WHEEL = 0x0800;
+        private const int MOUSEEVENTF_HWHEEL = 0x1000;
 
         public const int KEYBDEVENTF_KEYDOWN = 0;
         public const int KEYBDEVENTF_KEYUP = 2;
 
+        [Flags]
+        public enum MouseEventFlag : int
+        {
+            LEFTDOWN = 0x00000002,
+            LEFTUP = 0x00000004,
+            MIDDLEDOWN = 0x00000020,
+            MIDDLEUP = 0x00000040,
+            MOVE = 0x00000001,
+            ABSOLUTE = 0x00008000,
+            RIGHTDOWN = 0x00000008,
+            RIGHTUP = 0x00000010,
+            WHEEL = 0x00000800,
+            XDOWN = 0x00000080,
+            XUP = 0x00000100
+        }
 
         public void ProcessRequest(HttpContext context)
         {    
@@ -164,6 +184,31 @@ namespace OfficeRemoteWeb.Handlers
             {
                 mouse_event(MOUSEEVENTF_MOVE, (int)offsetX, (int)offsetY, 0, 0);
             }
+            else if (gesType == "scroll")
+            {
+                mouse_event(MOUSEEVENTF_WHEEL, 0, 0, (int)offsetY, 0);
+            }
+            else if (gesType == "Hscroll")
+            {
+                mouse_event(MOUSEEVENTF_HWHEEL, 0, 0, (int)offsetX, 0);
+            }
+            else if (gesType == "pinchin")
+            {
+                keybd_event(0xa2, MapVirtualKey(0xa2, 0), 0, 0);　　
+                mouse_event((int)MouseEventFlag.WHEEL, 0, 0, -50, 0);
+                keybd_event(0xa2, MapVirtualKey(0xa2, 0), 0x2, 0);
+            }
+            else if (gesType == "pinchout")
+            {
+                keybd_event(0xa2, MapVirtualKey(0xa2, 0), 0, 0);
+                mouse_event((int)MouseEventFlag.WHEEL, 0, 0, 50, 0);
+                keybd_event(0xa2, MapVirtualKey(0xa2, 0), 0x2, 0);
+            }
+            else if (gesType == "win")
+            {
+                keybd_event(0x5b, 0, 0, 0);
+                keybd_event(0x5b, 0, 0x2, 0);
+            }
             else if (gesType == "run")
             {
                 try
@@ -174,7 +219,7 @@ namespace OfficeRemoteWeb.Handlers
                 {
 
                 }
-                if (pptApplication != null)
+                if (pptApplication != null && pptApplication.ActivePresentation != null)
                 {
                     presentation = pptApplication.ActivePresentation;
                     if (presentation != null)
@@ -196,6 +241,48 @@ namespace OfficeRemoteWeb.Handlers
                     presentation = pptApplication.ActivePresentation;
                     if (presentation != null)
                         presentation.SlideShowWindow.View.Exit();
+                }
+            }
+            else if (gesType == "upload")
+            {
+                var imgData = context.Request["file"] == null ? "" : context.Request["file"].ToString();
+                byte[] imgBytes = Convert.FromBase64String(imgData.Substring( imgData.IndexOf( ',' ) + 1 ));
+
+                using (var imageStream = new MemoryStream(imgBytes, false))
+                {
+                    WebClient myWebClient = new WebClient();
+                    myWebClient.Credentials = CredentialCache.DefaultCredentials;
+                    try
+                    {
+                        // Get Running PowerPoint Application object 
+                        pptApplication = System.Runtime.InteropServices.Marshal.GetActiveObject("PowerPoint.Application") as PPt.Application;
+                    }
+                    catch
+                    {
+
+                    }
+                    if (pptApplication != null)
+                    {
+                        presentation = pptApplication.ActivePresentation;
+                        slides = presentation.Slides;
+                        slidescount = slides.Count;
+
+                        try
+                        {
+                            slide = slides[pptApplication.ActiveWindow.Selection.SlideRange.SlideNumber];
+                        }
+                        catch
+                        {
+                            slide = pptApplication.SlideShowWindows[1].View.Slide;
+                        }
+                        Stream postStream = myWebClient.OpenWrite("c:\\upload\\uploaded.jpg", "PUT"); 
+                        if (postStream.CanWrite) 
+                        { 
+                            postStream.Write(imgBytes, 0, imgBytes.Length); 
+                        }
+                        postStream.Close();
+                        slide.Shapes.AddPicture("c:\\upload\\uploaded.jpg", Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, 150, 150, 480, 360);
+                    }
                 }
             }
         }
