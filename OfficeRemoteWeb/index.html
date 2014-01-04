@@ -42,6 +42,11 @@
             direction: ltr;
             cursor: pointer;
         }
+
+        .glowBtn {
+            color:red;
+            font-weight:bold;
+        }
     </style>
 </head>
 <body>
@@ -88,6 +93,9 @@
 
         <div data-role="footer" style="text-align:center">
             <a href="#mainPage" style="top:0px;" data-transition="flip" class="ui-btn">Slideshow</a>
+            <span id="btnLaser" state="off" class="ui-btn ui-corner-all fileinput-button" style="position: absolute; bottom:2px; left:2px; background-color:transparent; border:0px">
+                <span id="spLaser">Laser</span>
+            </span>
         </div>
 
     </div>
@@ -182,14 +190,39 @@
                 });
             });
 
+            $("#btnLaser").click(function (e) {
+                e.stopImmediatePropagation();
+                e.preventDefault();
+
+                var eventType = 'laseron';
+                if ($("#spLaser").attr("state") == "off") {
+                    eventType = 'laseron';
+                    $("#spLaser").attr("state","on");
+                    $("#spLaser").addClass("glowBtn");
+                } else {
+                    eventType = 'laseroff';
+                    $("#spLaser").attr("state", "off");
+                    $("#spLaser").removeClass("glowBtn");
+                }
+
+                //$.ajax({
+                //    url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                //    data: {
+                //        type: eventType,
+                //        offset_x: 0,
+                //        offset_y: 0
+                //    }
+                //});
+            });
+
             //$(document).delegate('#mainPage', 'pageshow', function () {
                 
             //});
 
             var the_height = ($(window).height() - $("#mainPage").find('[data-role="header"]').height() - $("#mainPage").find('[data-role="footer"]').height() - 120);
             $("#mainPage").height($(window).height()).find('[data-role="content"]').height(the_height);
-            $("#swipeme").css("line-height", (the_height - 45) + "px");
-            $("#touchme").css("line-height", (the_height - 45) + "px");
+            $("#swipeme").css("line-height", (the_height - 46) + "px");
+            $("#touchme").css("line-height", (the_height - 43) + "px");
 
             document.ontouchmove = function (event) {
                 event.preventDefault();
@@ -343,12 +376,42 @@
                 }
             });
 
+            Hammer(tm, { drag_max_touches: 3 }).on('dragstart', function (event) {
+                event.gesture.preventDefault();
+
+                var laserState = $("#spLaser").attr("state");
+                if (event.gesture.touches.length == 1) {
+                    if (laserState == "on") {
+                        $.ajax({
+                            url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                            data: {
+                                type: "laseron",
+                                offset_x: event.gesture.distance * 3,
+                                offset_y: 0
+                            }
+                        });
+                    }
+                }
+            });
+
             Hammer(tm, { drag_max_touches: 3 }).on('dragend', function (event) {
                 event.gesture.preventDefault();
 
                 if (event.gesture.touches.length == 1) {
                     prevDistanceX = 0;
                     prevDistanceY = 0;
+
+                    var laserState = $("#spLaser").attr("state");
+                    if (laserState == "on") {
+                        $.ajax({
+                            url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                            data: {
+                                type: "laseroff",
+                                offset_x: event.gesture.distance * 3,
+                                offset_y: 0
+                            }
+                        });
+                    }
                 }
 
                 //if (event.gesture.touches.length == 3 && (event.gesture.direction == "up" || event.gesture.direction == "down"))

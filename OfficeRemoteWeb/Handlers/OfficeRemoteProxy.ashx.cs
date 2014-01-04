@@ -204,6 +204,16 @@ namespace OfficeRemoteWeb.Handlers
                 mouse_event((int)MouseEventFlag.WHEEL, 0, 0, 50, 0);
                 keybd_event(0xa2, MapVirtualKey(0xa2, 0), 0x2, 0);
             }
+            else if (gesType == "laseron")
+            {
+                keybd_event(0xa2, MapVirtualKey(0xa2, 0), 0, 0);
+                mouse_event((int)MouseEventFlag.LEFTDOWN, 0, 0, 0, 0);
+            }
+            else if (gesType == "laseroff")
+            {
+                mouse_event((int)MouseEventFlag.LEFTUP, 0, 0, 0, 0);
+                keybd_event(0xa2, MapVirtualKey(0xa2, 0), 0x2, 0);
+            }
             else if (gesType == "win")
             {
                 keybd_event(0x5b, 0, 0, 0);
