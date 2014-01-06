@@ -44,8 +44,8 @@
         }
 
         .glowBtn {
-            color:red;
-            font-weight:bold;
+            color: red;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -83,7 +83,7 @@
             <a href="" style="top: 4px; background-color: transparent; border:0px" class="ui-btn btnHome"><img src="images/office_logo.png" /></a>
             <h1>Trackpad</h1>
             <span id="btnStart" class="ui-btn ui-corner-all fileinput-button" style="position: absolute; top:-2px; right:2px; background-color:transparent; border:0px">
-                <span id="spSlideShow">Start</span>
+                <span id="spStart">Start</span>
             </span>
         </div>
 
@@ -112,6 +112,10 @@
 			<a href="#controlPage" data-transition="fade" class="ui-btn ui-shadow ui-corner-all ui-btn-a">Trackpad</a>
 		</div>
 	</div>
+
+    <div id="popup" data-role="popup" class="ui-content" style="background-color:white">
+        Done.
+    </div>
     
     <script>
         (function ($) {
@@ -128,8 +132,11 @@
                     var filename = event.target.files[0];
                     var fr = new FileReader();
                     fr.onload = function imageHandler(e) {
-                        //var store = document.getElementById('imgstore');
-                        //store.innerHTML = '<img src="' + e.target.result + '">';
+                        $.mobile.loading("show", {
+                            text: "Uploading image",
+                            textVisible: "true"
+                        });
+
                         $.ajax({
                             type: "POST",
                             url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
@@ -139,6 +146,11 @@
                                 offset_x: 0,
                                 offset_y: 0
                             }
+                        }).done(function () {
+                            $.mobile.loading("hide");
+                            $("#popup").popup();
+                            $("#popup").popup('open');
+                            setTimeout(function () { $("#popup").popup('close'); }, 800);
                         });
                     };
                     fr.readAsDataURL(filename);
@@ -204,15 +216,6 @@
                     $("#spLaser").attr("state", "off");
                     $("#spLaser").removeClass("glowBtn");
                 }
-
-                //$.ajax({
-                //    url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
-                //    data: {
-                //        type: eventType,
-                //        offset_x: 0,
-                //        offset_y: 0
-                //    }
-                //});
             });
 
             //$(document).delegate('#mainPage', 'pageshow', function () {
