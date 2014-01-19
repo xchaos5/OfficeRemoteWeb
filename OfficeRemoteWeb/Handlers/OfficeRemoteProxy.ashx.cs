@@ -291,7 +291,7 @@ namespace OfficeRemoteWeb.Handlers
                             postStream.Write(imgBytes, 0, imgBytes.Length); 
                         }
                         postStream.Close();
-                        slide.Shapes.AddPicture("c:\\upload\\uploaded.jpg", Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, 150, 150, 480, 360);
+                        slide.Shapes.AddPicture("c:\\upload\\uploaded.jpg", Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, 440, 100, 480, 360);
                     }
                 }
             }

@@ -9,6 +9,7 @@ using System.Threading;
 using System.Net;
 using System.IO;
 using System.Diagnostics;
+using System.Net.Sockets;
 
 namespace TestConsole
 {
@@ -68,17 +69,19 @@ namespace TestConsole
                 try
                 {
                     HttpListener listener = new HttpListener();
-                    listener.Prefixes.Add("http://+:8080/");
+                    listener.Prefixes.Add("http://+:80/");
                     listener.Start();
+                    Console.WriteLine("Server started.");
 
                     while (true)
                     {
                         var context = listener.GetContext();
                         Console.WriteLine(string.Format("{0} {1}", context.Request.HttpMethod, context.Request.Url.AbsolutePath));
-                        if (File.Exists(dir + context.Request.Url.LocalPath))
-                            sendData = File.ReadAllBytes(dir + context.Request.Url.LocalPath);
+                        string relPath = context.Request.Url.LocalPath;
+                        if (File.Exists(dir + relPath))
+                            sendData = File.ReadAllBytes(dir + relPath);
                         else
-                            sendData = System.Text.Encoding.Default.GetBytes("<b>404 File not found<b>....");
+                            sendData = System.Text.Encoding.Default.GetBytes("404 File not found");
                         context.Response.ContentType = GetContentType(context.Request.Url.LocalPath);
                         context.Response.Close(sendData, true);
                     }
@@ -91,7 +94,6 @@ namespace TestConsole
             thread.IsBackground = true;
             thread.Start();
 
-            Console.WriteLine("Server started.");
             Console.ReadLine();
         }
     }

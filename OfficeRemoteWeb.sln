@@ -1,9 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeRemoteWeb", "OfficeRemoteWeb\OfficeRemoteWeb.csproj", "{78989AF1-0EAC-4CDD-9EEF-02CC09293F6B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{DDD95473-91F0-4EB8-A749-CCD9CD85DB22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSFTwifiAssistant", "MSFTwifiAssistant\MSFTwifiAssistant.csproj", "{E2D60FB7-4F4A-48D3-B6AE-E6C4F5BDC722}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeRemoteService", "OfficeRemoteService\OfficeRemoteService.csproj", "{0BA8C758-551F-4AFE-A1BB-9796862BD8E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +25,14 @@ Global
 		{DDD95473-91F0-4EB8-A749-CCD9CD85DB22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDD95473-91F0-4EB8-A749-CCD9CD85DB22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDD95473-91F0-4EB8-A749-CCD9CD85DB22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2D60FB7-4F4A-48D3-B6AE-E6C4F5BDC722}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2D60FB7-4F4A-48D3-B6AE-E6C4F5BDC722}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2D60FB7-4F4A-48D3-B6AE-E6C4F5BDC722}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2D60FB7-4F4A-48D3-B6AE-E6C4F5BDC722}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BA8C758-551F-4AFE-A1BB-9796862BD8E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BA8C758-551F-4AFE-A1BB-9796862BD8E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BA8C758-551F-4AFE-A1BB-9796862BD8E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BA8C758-551F-4AFE-A1BB-9796862BD8E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
