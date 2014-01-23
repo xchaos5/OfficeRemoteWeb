@@ -314,6 +314,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Images\point.png" />
+    <Content Include="Images\right_click.png" />
     <Content Include="Index.aspx" />
     <Content Include="index.html" />
     <Content Include="packages.config" />

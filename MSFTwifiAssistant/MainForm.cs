@@ -15,7 +15,7 @@ namespace MSFTwifiAssistant
 {
     public partial class MainForm : Form
     {
-        private static bool autoConfigOff = false;
+        //private static bool autoConfigOff = false;
 
         public MainForm()
         {
@@ -108,59 +108,63 @@ namespace MSFTwifiAssistant
 
         private void btnTurnOff_Click(object sender, EventArgs e)
         {
-            try
-            {
-                var sc = new ServiceController("WLAN AutoConfig");
-                sc.Stop();
-                sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
-                if (sc.Status != ServiceControllerStatus.Stopped)
-                {
-                    appendLog("Failed to turn on WLAN AutoConfig: Timeout");
-                }
-                else
-                {
-                    autoConfigOff = true;
-                    appendLog("WLAN AutoConfig service stopped.");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Failed to turn off WLAN AutoConfig service: " + ex.ToString());
-            }
+            //try
+            //{
+            //    var sc = new ServiceController("WLAN AutoConfig");
+            //    sc.Stop();
+            //    sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
+            //    if (sc.Status != ServiceControllerStatus.Stopped)
+            //    {
+            //        appendLog("Failed to turn on WLAN AutoConfig: Timeout");
+            //    }
+            //    else
+            //    {
+            //        autoConfigOff = true;
+            //        appendLog("WLAN AutoConfig service stopped.");
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show("Failed to turn off WLAN AutoConfig service: " + ex.ToString());
+            //}
+
+            string cmd = "netsh wlan disconnect";
+            string outStr = runCommand(cmd);
+            appendLog(outStr);
         }
 
         private void btnTurnOn_Click(object sender, EventArgs e)
         {
-            try
-            {
-                var sc = new ServiceController("WLAN AutoConfig");
-                sc.Start();
-                sc.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
-                if (sc.Status != ServiceControllerStatus.Running)
-                {
-                    appendLog("Failed to turn on WLAN AutoConfig: Timeout");
-                }
-                else
-                {
-                    autoConfigOff = false;
-                    appendLog("WLAN AutoConfig service started.");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Failed to turn on WLAN AutoConfig service: " + ex.ToString());
-            }
+            //try
+            //{
+            //    var sc = new ServiceController("WLAN AutoConfig");
+            //    sc.Start();
+            //    sc.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
+            //    if (sc.Status != ServiceControllerStatus.Running)
+            //    {
+            //        appendLog("Failed to turn on WLAN AutoConfig: Timeout");
+            //    }
+            //    else
+            //    {
+            //        autoConfigOff = false;
+            //        appendLog("WLAN AutoConfig service started.");
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show("Failed to turn on WLAN AutoConfig service: " + ex.ToString());
+            //}
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (autoConfigOff)
-            {
-                if (MessageBox.Show("You have turned off WLAN AutoConfig, are you sure not to turn on before quit?", "Warning", MessageBoxButtons.YesNo) == DialogResult.No)
-                {
-                    e.Cancel = true;
-                }
-            }
+            //if (autoConfigOff)
+            //{
+            //    if (MessageBox.Show("You have turned off WLAN AutoConfig, are you sure not to turn on before quit?", "Warning", MessageBoxButtons.YesNo) == DialogResult.No)
+            //    {
+            //        e.Cancel = true;
+            //    }
+            //}
         }
     }
 }

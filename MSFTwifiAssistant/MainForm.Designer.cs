@@ -39,15 +39,14 @@
             this.rtbLog = new System.Windows.Forms.RichTextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.btnTurnOff = new System.Windows.Forms.Button();
-            this.btnTurnOn = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // btnCreateAP
             // 
-            this.btnCreateAP.Location = new System.Drawing.Point(204, 12);
+            this.btnCreateAP.Location = new System.Drawing.Point(216, 12);
             this.btnCreateAP.Name = "btnCreateAP";
             this.btnCreateAP.Size = new System.Drawing.Size(60, 46);
             this.btnCreateAP.TabIndex = 0;
@@ -77,14 +76,14 @@
             // 
             this.tbSSID.Location = new System.Drawing.Point(54, 12);
             this.tbSSID.Name = "tbSSID";
-            this.tbSSID.Size = new System.Drawing.Size(144, 20);
+            this.tbSSID.Size = new System.Drawing.Size(156, 20);
             this.tbSSID.TabIndex = 3;
             // 
             // tbPIN
             // 
             this.tbPIN.Location = new System.Drawing.Point(54, 40);
             this.tbPIN.Name = "tbPIN";
-            this.tbPIN.Size = new System.Drawing.Size(144, 20);
+            this.tbPIN.Size = new System.Drawing.Size(156, 20);
             this.tbPIN.TabIndex = 4;
             // 
             // btnStart
@@ -93,7 +92,7 @@
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(75, 23);
             this.btnStart.TabIndex = 5;
-            this.btnStart.Text = "Start Wifi";
+            this.btnStart.Text = "Share Wifi";
             this.btnStart.UseVisualStyleBackColor = true;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
@@ -101,15 +100,15 @@
             // 
             this.btnStop.Location = new System.Drawing.Point(102, 93);
             this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(75, 23);
+            this.btnStop.Size = new System.Drawing.Size(93, 23);
             this.btnStop.TabIndex = 6;
-            this.btnStop.Text = "Stop Wifi";
+            this.btnStop.Text = "Stop Sharing";
             this.btnStop.UseVisualStyleBackColor = true;
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
             // btnClear
             // 
-            this.btnClear.Location = new System.Drawing.Point(189, 93);
+            this.btnClear.Location = new System.Drawing.Point(201, 93);
             this.btnClear.Name = "btnClear";
             this.btnClear.Size = new System.Drawing.Size(75, 23);
             this.btnClear.TabIndex = 7;
@@ -137,7 +136,6 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.btnTurnOn);
             this.groupBox1.Controls.Add(this.btnTurnOff);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Location = new System.Drawing.Point(282, 5);
@@ -145,37 +143,27 @@
             this.groupBox1.Size = new System.Drawing.Size(270, 111);
             this.groupBox1.TabIndex = 11;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "WLAN AutoConfig";
+            this.groupBox1.Text = "Disconnect Wifi";
+            // 
+            // btnTurnOff
+            // 
+            this.btnTurnOff.Location = new System.Drawing.Point(81, 73);
+            this.btnTurnOff.Name = "btnTurnOff";
+            this.btnTurnOff.Size = new System.Drawing.Size(112, 23);
+            this.btnTurnOff.TabIndex = 1;
+            this.btnTurnOff.Text = "Disconnect Wifi";
+            this.btnTurnOff.UseVisualStyleBackColor = true;
+            this.btnTurnOff.Click += new System.EventHandler(this.btnTurnOff_Click);
             // 
             // label4
             // 
             this.label4.ForeColor = System.Drawing.Color.DarkRed;
-            this.label4.Location = new System.Drawing.Point(7, 29);
+            this.label4.Location = new System.Drawing.Point(27, 24);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(269, 31);
+            this.label4.Size = new System.Drawing.Size(237, 46);
             this.label4.TabIndex = 0;
-            this.label4.Text = "Windows WLAN AutoConfig service will significantly affect the stability of Wifi A" +
-    "P. Turn off recommended";
-            // 
-            // btnTurnOff
-            // 
-            this.btnTurnOff.Location = new System.Drawing.Point(51, 68);
-            this.btnTurnOff.Name = "btnTurnOff";
-            this.btnTurnOff.Size = new System.Drawing.Size(75, 23);
-            this.btnTurnOff.TabIndex = 1;
-            this.btnTurnOff.Text = "Turn Off";
-            this.btnTurnOff.UseVisualStyleBackColor = true;
-            this.btnTurnOff.Click += new System.EventHandler(this.btnTurnOff_Click);
-            // 
-            // btnTurnOn
-            // 
-            this.btnTurnOn.Location = new System.Drawing.Point(145, 68);
-            this.btnTurnOn.Name = "btnTurnOn";
-            this.btnTurnOn.Size = new System.Drawing.Size(75, 23);
-            this.btnTurnOn.TabIndex = 2;
-            this.btnTurnOn.Text = "Turn On";
-            this.btnTurnOn.UseVisualStyleBackColor = true;
-            this.btnTurnOn.Click += new System.EventHandler(this.btnTurnOn_Click);
+            this.label4.Text = "To ensure stability of shared Wifi, we strongly recommend you DISCONNECT current " +
+    "Wifi connection before sharing.";
             // 
             // MainForm
             // 
@@ -218,7 +206,6 @@
         private System.Windows.Forms.RichTextBox rtbLog;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button btnTurnOn;
         private System.Windows.Forms.Button btnTurnOff;
         private System.Windows.Forms.Label label4;
     }

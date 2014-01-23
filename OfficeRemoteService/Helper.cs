@@ -1,22 +1,18 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Web;
-using System.Windows.Forms;
+using System.Net;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Office.Core;
 using PPt = Microsoft.Office.Interop.PowerPoint;
-using System.Runtime.InteropServices;
-using System.IO;
-using System.Drawing;
-using System.Net;
+using System.Windows.Forms;
 
-namespace OfficeRemoteWeb.Handlers
+namespace OfficeRemoteService
 {
-    /// <summary>
-    /// Summary description for OfficeRemoteProxy
-    /// </summary>
-    public class OfficeRemoteProxy : IHttpHandler
+    public class Helper
     {
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         public static extern void mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);
@@ -26,6 +22,12 @@ namespace OfficeRemoteWeb.Handlers
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         public static extern byte MapVirtualKey(int wCode, int wMapType);
+
+        [DllImport("user32")]
+        public static extern bool SetSystemCursor(IntPtr hCursor, uint cur);
+
+        [DllImport("user32")]
+        public static extern IntPtr LoadCursor(IntPtr hInstance, uint id); 
 
         // constants for the mouse_input() API function
         private const int MOUSEEVENTF_MOVE = 0x0001;
@@ -38,6 +40,9 @@ namespace OfficeRemoteWeb.Handlers
         private const int MOUSEEVENTF_ABSOLUTE = 0x8000;
         private const int MOUSEEVENTF_WHEEL = 0x0800;
         private const int MOUSEEVENTF_HWHEEL = 0x1000;
+
+        private const uint IDC_ARROW = 32512;
+        private const uint OCR_HAND = 32649;
 
         public const int KEYBDEVENTF_KEYDOWN = 0;
         public const int KEYBDEVENTF_KEYUP = 2;
@@ -58,16 +63,17 @@ namespace OfficeRemoteWeb.Handlers
             XUP = 0x00000100
         }
 
-        public void ProcessRequest(HttpContext context)
-        {    
-            //context.Response.ContentType = "text/plain";
-            //context.Response.Write("Hello World");
-            string gesType = context.Request["type"].ToString();
-            string gesDirection = context.Request["direction"] == null ? "" : context.Request["direction"].ToString();
+        public static void HandleRequest(HttpListenerContext context)
+        {
+            string gesType = context.Request.QueryString["type"].ToString();
+            string gesDirection = context.Request.QueryString["direction"] == null ? "" : context.Request.QueryString["direction"].ToString();
+            int touches = 0;
+            if (null != context.Request.QueryString["touches"])
+                Int32.TryParse(context.Request.QueryString["touches"].ToString(), out touches);
             double offsetX = 0;
-            Double.TryParse(context.Request["offset_x"].ToString(), out offsetX);
+            Double.TryParse(context.Request.QueryString["offset_x"].ToString(), out offsetX);
             double offsetY = 0;
-            Double.TryParse(context.Request["offset_y"].ToString(), out offsetY);
+            Double.TryParse(context.Request.QueryString["offset_y"].ToString(), out offsetY);
 
             PPt.Application pptApplication = null;
             PPt.Presentation presentation = null;
@@ -144,7 +150,7 @@ namespace OfficeRemoteWeb.Handlers
                             pptApplication.SlideShowWindows[1].View.Next();
                             slide = pptApplication.SlideShowWindows[1].View.Slide;
                         }
-                    } 
+                    }
                 }
                 else if (gesDirection == "up")
                 {
@@ -177,8 +183,20 @@ namespace OfficeRemoteWeb.Handlers
             }
             else if (gesType == "tap")
             {
+                if (touches == 1)
+                {
+                    mouse_event(MOUSEEVENTF_LEFTDOWN, Control.MousePosition.X, Control.MousePosition.Y, 0, 0);
+                    mouse_event(MOUSEEVENTF_LEFTUP, Control.MousePosition.X, Control.MousePosition.Y, 0, 0);
+                }
+                else if (touches == 2)
+                {
+                    mouse_event(MOUSEEVENTF_RIGHTDOWN, Control.MousePosition.X, Control.MousePosition.Y, 0, 0);
+                    mouse_event(MOUSEEVENTF_RIGHTUP, Control.MousePosition.X, Control.MousePosition.Y, 0, 0);
+                }
+            }
+            else if (gesType == "hold")
+            {
                 mouse_event(MOUSEEVENTF_LEFTDOWN, Control.MousePosition.X, Control.MousePosition.Y, 0, 0);
-                mouse_event(MOUSEEVENTF_LEFTUP, Control.MousePosition.X, Control.MousePosition.Y, 0, 0);
             }
             else if (gesType == "drag")
             {
@@ -194,7 +212,7 @@ namespace OfficeRemoteWeb.Handlers
             }
             else if (gesType == "pinchin")
             {
-                keybd_event(0xa2, MapVirtualKey(0xa2, 0), 0, 0);　　
+                keybd_event(0xa2, MapVirtualKey(0xa2, 0), 0, 0);
                 mouse_event((int)MouseEventFlag.WHEEL, 0, 0, -50, 0);
                 keybd_event(0xa2, MapVirtualKey(0xa2, 0), 0x2, 0);
             }
@@ -260,8 +278,8 @@ namespace OfficeRemoteWeb.Handlers
             }
             else if (gesType == "upload")
             {
-                var imgData = context.Request["file"] == null ? "" : context.Request["file"].ToString();
-                byte[] imgBytes = Convert.FromBase64String(imgData.Substring( imgData.IndexOf( ',' ) + 1 ));
+                var imgData = context.Request.QueryString["file"] == null ? "" : context.Request.QueryString["file"].ToString();
+                byte[] imgBytes = Convert.FromBase64String(imgData.Substring(imgData.IndexOf(',') + 1));
 
                 using (var imageStream = new MemoryStream(imgBytes, false))
                 {
@@ -290,23 +308,15 @@ namespace OfficeRemoteWeb.Handlers
                         {
                             slide = pptApplication.SlideShowWindows[1].View.Slide;
                         }
-                        Stream postStream = myWebClient.OpenWrite("c:\\upload\\uploaded.jpg", "PUT"); 
-                        if (postStream.CanWrite) 
-                        { 
-                            postStream.Write(imgBytes, 0, imgBytes.Length); 
+                        Stream postStream = myWebClient.OpenWrite("c:\\upload\\uploaded.jpg", "PUT");
+                        if (postStream.CanWrite)
+                        {
+                            postStream.Write(imgBytes, 0, imgBytes.Length);
                         }
                         postStream.Close();
                         slide.Shapes.AddPicture("c:\\upload\\uploaded.jpg", Microsoft.Office.Core.MsoTriState.msoFalse, Microsoft.Office.Core.MsoTriState.msoCTrue, 440, 100, 480, 360);
                     }
                 }
-            }
-        }
-
-        public bool IsReusable
-        {
-            get
-            {
-                return false;
             }
         }
     }

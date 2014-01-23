@@ -26,6 +26,7 @@ namespace OfficeRemoteService
         private static Thread thread;
         private static Worker worker;
         private static volatile int port = 0;
+        private static HttpListener listener;
 
         public class Worker
         {
@@ -34,9 +35,10 @@ namespace OfficeRemoteService
             {
                 byte[] sendData = null;
                 string dir = Environment.CurrentDirectory;  //Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                listener = new HttpListener();
+
                 try
                 {
-                    HttpListener listener = new HttpListener();
                     listener.Prefixes.Add(String.Format("http://+:{0}/", port));
                     listener.Start();
 
@@ -49,27 +51,37 @@ namespace OfficeRemoteService
 
                     while (!_shouldStop)
                     {
-                        var context = listener.GetContext();
-                        Console.WriteLine(string.Format("{0} {1}", context.Request.HttpMethod, context.Request.Url.AbsolutePath));
-                        string relPath = context.Request.Url.LocalPath;
-                        context.Response.ContentType = GetContentType(context.Request.Url.LocalPath);
-
-                        if (File.Exists(dir + relPath))
-                            sendData = File.ReadAllBytes(dir + relPath);
-                        else
+                        try
                         {
-                            sendData = System.Text.Encoding.Default.GetBytes("404 File not found");
-                            if (relPath == "/" || String.IsNullOrEmpty(relPath))
+                            var context = listener.GetContext();
+                            Console.WriteLine(string.Format("{0} {1}", context.Request.HttpMethod, context.Request.Url.AbsolutePath));
+                            string relPath = context.Request.Url.LocalPath;
+                            context.Response.ContentType = GetContentType(context.Request.Url.LocalPath);
+
+                            if ("/Handlers/OfficeRemoteProxy.ashx" == relPath)
                             {
-                                if (File.Exists(dir + "\\index.html"))
+                                Helper.HandleRequest(context);
+                                
+                            }
+
+                            if (File.Exists(dir + relPath))
+                                sendData = File.ReadAllBytes(dir + relPath);
+                            else
+                            {
+                                sendData = System.Text.Encoding.Default.GetBytes("404 File not found");
+                                if (relPath == "/" || String.IsNullOrEmpty(relPath))
                                 {
-                                    sendData = File.ReadAllBytes(dir + "\\index.html");
-                                    context.Response.ContentType = "text/html";
+                                    if (File.Exists(dir + "\\index.html"))
+                                    {
+                                        sendData = File.ReadAllBytes(dir + "\\index.html");
+                                        context.Response.ContentType = "text/html";
+                                    }
                                 }
                             }
+
+                            context.Response.Close(sendData, true);
                         }
-                        
-                        context.Response.Close(sendData, true);
+                        catch { }
                     }
                 }
                 catch (Exception ex)
@@ -83,6 +95,10 @@ namespace OfficeRemoteService
                             ((RichTextBox)rtb).ScrollToCaret();
                         }));
                     }
+                }
+                finally
+                {
+                    listener.Close();
                 }
 
                 Console.WriteLine("Service thread terminating gracefully.");
@@ -214,6 +230,7 @@ namespace OfficeRemoteService
                     thread.Join(1000);
                     if (thread.ThreadState != System.Threading.ThreadState.Stopped)
                     {
+                        listener.Close();
                         thread.Abort();
                     }
                     appendLog("Service stopped.");

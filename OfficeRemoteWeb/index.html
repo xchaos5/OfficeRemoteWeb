@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Office Remote</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
 
     <link rel="stylesheet" href="Content/jquery.mobile-1.4.0.css" />
 
@@ -47,6 +47,12 @@
             color: red;
             font-weight: bold;
         }
+
+        body {
+            -webkit-user-select: none; /* Chrome/Safari */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* IE10+ */
+        }
     </style>
 </head>
 <body>
@@ -89,6 +95,10 @@
 
         <div id="touchme" data-role="content">
             <span style="vertical-align:middle; color:gray"><h1>Drag here</h1></span>
+
+            <span id="btnRightClick" class="ui-btn ui-corner-all fileinput-button" style="position:absolute; bottom:36px; right:-10px; background-color:transparent; border:0px">
+                <img src="images/right_click.png" width="80" style="opacity: 0.4; filter: alpha(opacity=40);" />
+            </span>
         </div>
 
         <div data-role="footer" style="text-align:center">
@@ -139,7 +149,7 @@
 
                         $.ajax({
                             type: "POST",
-                            url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                            url: "Handlers/OfficeRemoteProxy.ashx",
                             data: {
                                 type: "upload",
                                 file: e.target.result,
@@ -179,7 +189,7 @@
                 }
 
                 $.ajax({
-                    url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                    url: "Handlers/OfficeRemoteProxy.ashx",
                     data: {
                         type: eventType,
                         offset_x: 0,
@@ -193,7 +203,7 @@
                 e.preventDefault();
 
                 $.ajax({
-                    url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                    url: "Handlers/OfficeRemoteProxy.ashx",
                     data: {
                         type: "win",
                         offset_x: 0,
@@ -222,7 +232,7 @@
                 
             //});
 
-            var the_height = ($(window).height() - $("#mainPage").find('[data-role="header"]').height() - $("#mainPage").find('[data-role="footer"]').height() - 120);
+            var the_height = ($(window).height() - $("#mainPage").find('[data-role="header"]').height() - $("#mainPage").find('[data-role="footer"]').height() - 121);
             $("#mainPage").height($(window).height()).find('[data-role="content"]').height(the_height);
             $("#swipeme").css("line-height", (the_height - 46) + "px");
             $("#touchme").css("line-height", (the_height - 43) + "px");
@@ -232,7 +242,8 @@
             }
 
             var sm = document.getElementById('swipeme'),
-                tm = document.getElementById('touchme');
+                tm = document.getElementById('touchme'),
+                rb = document.getElementById('btnRightClick');
 
             var prevDistanceX = 0;
             var prevDistanceY = 0;
@@ -244,7 +255,7 @@
                 var myType = event.type;
 
                 $.ajax({
-                    url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                    url: "Handlers/OfficeRemoteProxy.ashx",
                     data: {
                         type: myType,
                         direction: event.gesture.direction,
@@ -259,7 +270,7 @@
             Hammer(sm).on('pinchin', function (event) {
                 event.gesture.preventDefault();
                 $.ajax({
-                    url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                    url: "Handlers/OfficeRemoteProxy.ashx",
                     data: {
                         type: 'pinchin',
                         direction: event.gesture.direction,
@@ -272,7 +283,7 @@
             Hammer(sm).on('pinchout', function (event) {
                 event.gesture.preventDefault();
                 $.ajax({
-                    url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                    url: "Handlers/OfficeRemoteProxy.ashx",
                     data: {
                         type: 'pinchout',
                         direction: event.gesture.direction,
@@ -291,7 +302,7 @@
 
                 if (event.gesture.touches.length == 1) {
                     $.ajax({
-                        url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                        url: "Handlers/OfficeRemoteProxy.ashx",
                         data: {
                             type: event.type,
                             direction: event.gesture.direction,
@@ -314,7 +325,7 @@
 
                 if (event.gesture.touches.length == 2) {
                     $.ajax({
-                        url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                        url: "Handlers/OfficeRemoteProxy.ashx",
                         data: {
                             type: "scroll",
                             direction: event.gesture.direction,
@@ -331,7 +342,7 @@
 
                 if (event.gesture.touches.length == 2) {
                     $.ajax({
-                        url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                        url: "Handlers/OfficeRemoteProxy.ashx",
                         data: {
                             type: "scroll",
                             direction: event.gesture.direction,
@@ -348,7 +359,7 @@
 
                 if (event.gesture.touches.length == 2) {
                     $.ajax({
-                        url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                        url: "Handlers/OfficeRemoteProxy.ashx",
                         data: {
                             type: "Hscroll",
                             /*touches: event.touches.length,*/
@@ -365,9 +376,8 @@
                 event.gesture.preventDefault();
 
                 if (event.gesture.touches.length == 2) {
-                    //alert(123);
                     $.ajax({
-                        url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                        url: "Handlers/OfficeRemoteProxy.ashx",
                         data: {
                             type: "Hscroll",
                             /*touches: event.touches.length,*/
@@ -381,12 +391,11 @@
 
             Hammer(tm, { drag_max_touches: 3 }).on('dragstart', function (event) {
                 event.gesture.preventDefault();
-
                 var laserState = $("#spLaser").attr("state");
                 if (event.gesture.touches.length == 1) {
                     if (laserState == "on") {
                         $.ajax({
-                            url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                            url: "Handlers/OfficeRemoteProxy.ashx",
                             data: {
                                 type: "laseron",
                                 offset_x: event.gesture.distance * 3,
@@ -399,7 +408,6 @@
 
             Hammer(tm, { drag_max_touches: 3 }).on('dragend', function (event) {
                 event.gesture.preventDefault();
-
                 if (event.gesture.touches.length == 1) {
                     prevDistanceX = 0;
                     prevDistanceY = 0;
@@ -407,7 +415,7 @@
                     var laserState = $("#spLaser").attr("state");
                     if (laserState == "on") {
                         $.ajax({
-                            url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                            url: "Handlers/OfficeRemoteProxy.ashx",
                             data: {
                                 type: "laseroff",
                                 offset_x: event.gesture.distance * 3,
@@ -427,10 +435,39 @@
                 event.gesture.preventDefault();
                 
                 $.ajax({
-                    url: "http://" + window.location.hostname + ":59256/Handlers/OfficeRemoteProxy.ashx",
+                    url: "Handlers/OfficeRemoteProxy.ashx",
+                    data: {
+                        type: event.type,
+                        touches: 1,
+                        direction: event.gesture.direction,
+                        offset_x: 0,
+                        offset_y: 0
+                    }
+                });
+            });
+
+            Hammer(tm).on('hold', function (event) {
+                event.gesture.preventDefault();
+
+                $.ajax({
+                    url: "Handlers/OfficeRemoteProxy.ashx",
                     data: {
                         type: event.type,
                         direction: event.gesture.direction,
+                        offset_x: 0,
+                        offset_y: 0
+                    }
+                });
+            });
+
+            Hammer(rb).on('tap', function (event) {
+                event.gesture.preventDefault();
+
+                $.ajax({
+                    url: "Handlers/OfficeRemoteProxy.ashx",
+                    data: {
+                        type: "tap",
+                        touches: 2,
                         offset_x: 0,
                         offset_y: 0
                     }
