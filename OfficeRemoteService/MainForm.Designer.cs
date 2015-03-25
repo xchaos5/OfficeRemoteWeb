@@ -28,11 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.label1 = new System.Windows.Forms.Label();
             this.tbPort = new System.Windows.Forms.TextBox();
             this.btnRegister = new System.Windows.Forms.Button();
             this.rtbLog = new System.Windows.Forms.RichTextBox();
             this.btnStop = new System.Windows.Forms.Button();
+            this.OfficeRemoteNotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.OfficeRemoteContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.restoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.OfficeRemoteContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -81,6 +88,36 @@
             this.btnStop.UseVisualStyleBackColor = true;
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
+            // OfficeRemoteNotifyIcon
+            // 
+            this.OfficeRemoteNotifyIcon.ContextMenuStrip = this.OfficeRemoteContextMenuStrip;
+            this.OfficeRemoteNotifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("OfficeRemoteNotifyIcon.Icon")));
+            this.OfficeRemoteNotifyIcon.Text = "Office Remote Service";
+            this.OfficeRemoteNotifyIcon.Visible = true;
+            this.OfficeRemoteNotifyIcon.DoubleClick += new System.EventHandler(this.OfficeRemoteNotifyIcon_DoubleClick);
+            // 
+            // OfficeRemoteContextMenuStrip
+            // 
+            this.OfficeRemoteContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.restoreToolStripMenuItem,
+            this.closeToolStripMenuItem});
+            this.OfficeRemoteContextMenuStrip.Name = "OfficeRemoteContextMenuStrip";
+            this.OfficeRemoteContextMenuStrip.Size = new System.Drawing.Size(153, 70);
+            // 
+            // restoreToolStripMenuItem
+            // 
+            this.restoreToolStripMenuItem.Name = "restoreToolStripMenuItem";
+            this.restoreToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.restoreToolStripMenuItem.Text = "Restore";
+            this.restoreToolStripMenuItem.Click += new System.EventHandler(this.restoreToolStripMenuItem_Click);
+            // 
+            // closeToolStripMenuItem
+            // 
+            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.closeToolStripMenuItem.Text = "Close";
+            this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -92,9 +129,12 @@
             this.Controls.Add(this.tbPort);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "Office Remote Service";
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
+            this.OfficeRemoteContextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -107,6 +147,10 @@
         private System.Windows.Forms.Button btnRegister;
         private System.Windows.Forms.RichTextBox rtbLog;
         private System.Windows.Forms.Button btnStop;
+		  private System.Windows.Forms.NotifyIcon OfficeRemoteNotifyIcon;
+          private System.Windows.Forms.ContextMenuStrip OfficeRemoteContextMenuStrip;
+          private System.Windows.Forms.ToolStripMenuItem restoreToolStripMenuItem;
+          private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
     }
 }
 

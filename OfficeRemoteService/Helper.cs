@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Office.Core;
 using PPt = Microsoft.Office.Interop.PowerPoint;
@@ -65,15 +66,17 @@ namespace OfficeRemoteService
 
         public static void HandleRequest(HttpListenerContext context)
         {
-            string gesType = context.Request.QueryString["type"].ToString();
-            string gesDirection = context.Request.QueryString["direction"] == null ? "" : context.Request.QueryString["direction"].ToString();
+            string gesType = context.Request.QueryString["type"];
+            string gesDirection = context.Request.QueryString["direction"] == null ? "" : context.Request.QueryString["direction"];
             int touches = 0;
             if (null != context.Request.QueryString["touches"])
-                Int32.TryParse(context.Request.QueryString["touches"].ToString(), out touches);
+                Int32.TryParse(context.Request.QueryString["touches"], out touches);
             double offsetX = 0;
-            Double.TryParse(context.Request.QueryString["offset_x"].ToString(), out offsetX);
+            if (null != context.Request.QueryString["offset_x"])
+                Double.TryParse(context.Request.QueryString["offset_x"], out offsetX);
             double offsetY = 0;
-            Double.TryParse(context.Request.QueryString["offset_y"].ToString(), out offsetY);
+            if (null != context.Request.QueryString["offset_y"])
+                Double.TryParse(context.Request.QueryString["offset_y"].ToString(), out offsetY);
 
             PPt.Application pptApplication = null;
             PPt.Presentation presentation = null;
@@ -278,7 +281,11 @@ namespace OfficeRemoteService
             }
             else if (gesType == "upload")
             {
-                var imgData = context.Request.QueryString["file"] == null ? "" : context.Request.QueryString["file"].ToString();
+                string imgData;
+                using (var reader = new StreamReader(context.Request.InputStream, context.Request.ContentEncoding))
+                {
+                    imgData = reader.ReadToEnd();
+                }
                 byte[] imgBytes = Convert.FromBase64String(imgData.Substring(imgData.IndexOf(',') + 1));
 
                 using (var imageStream = new MemoryStream(imgBytes, false))

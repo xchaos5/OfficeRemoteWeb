@@ -25,7 +25,7 @@ namespace OfficeRemoteService
 
         private static Thread thread;
         private static Worker worker;
-        private static volatile int port = 0;
+        private static int port = 0;
         private static HttpListener listener;
 
         public class Worker
@@ -34,7 +34,7 @@ namespace OfficeRemoteService
             public void DoWork(object rtb)
             {
                 byte[] sendData = null;
-                string dir = Environment.CurrentDirectory;  //Path.GetDirectoryName(Process.GetCurrentProcess().MainModule.FileName);
+                string dir = Environment.CurrentDirectory;
                 listener = new HttpListener();
 
                 try
@@ -51,37 +51,33 @@ namespace OfficeRemoteService
 
                     while (!_shouldStop)
                     {
-                        try
+                        var context = listener.GetContext();
+                        Console.WriteLine(string.Format("{0} {1}", context.Request.HttpMethod, context.Request.Url.AbsolutePath));
+                        string relPath = context.Request.Url.LocalPath;
+                        context.Response.ContentType = GetContentType(context.Request.Url.LocalPath);
+
+                        if ("/Handlers/OfficeRemoteProxy.ashx" == relPath)
                         {
-                            var context = listener.GetContext();
-                            Console.WriteLine(string.Format("{0} {1}", context.Request.HttpMethod, context.Request.Url.AbsolutePath));
-                            string relPath = context.Request.Url.LocalPath;
-                            context.Response.ContentType = GetContentType(context.Request.Url.LocalPath);
-
-                            if ("/Handlers/OfficeRemoteProxy.ashx" == relPath)
-                            {
-                                Helper.HandleRequest(context);
+                            Helper.HandleRequest(context);
                                 
-                            }
+                        }
 
-                            if (File.Exists(dir + relPath))
-                                sendData = File.ReadAllBytes(dir + relPath);
-                            else
+                        if (File.Exists(dir + relPath))
+                            sendData = File.ReadAllBytes(dir + relPath);
+                        else
+                        {
+                            sendData = System.Text.Encoding.Default.GetBytes("404 File not found");
+                            if (relPath == "/" || String.IsNullOrEmpty(relPath))
                             {
-                                sendData = System.Text.Encoding.Default.GetBytes("404 File not found");
-                                if (relPath == "/" || String.IsNullOrEmpty(relPath))
+                                if (File.Exists(dir + "\\index.html"))
                                 {
-                                    if (File.Exists(dir + "\\index.html"))
-                                    {
-                                        sendData = File.ReadAllBytes(dir + "\\index.html");
-                                        context.Response.ContentType = "text/html";
-                                    }
+                                    sendData = File.ReadAllBytes(dir + "\\index.html");
+                                    context.Response.ContentType = "text/html";
                                 }
                             }
-
-                            context.Response.Close(sendData, true);
                         }
-                        catch { }
+
+                        context.Response.Close(sendData, true);
                     }
                 }
                 catch (Exception ex)
@@ -107,6 +103,7 @@ namespace OfficeRemoteService
             {
                 _shouldStop = true;
             }
+
             // Volatile is used as hint to the compiler that this data
             // member will be accessed by multiple threads.
             private volatile bool _shouldStop;
@@ -199,16 +196,6 @@ namespace OfficeRemoteService
             string strOutput = runCommand(String.Format("netsh http add urlacl url=http://+:{0}/ user=everyone listen=yes", port));
             if (strOutput == null)
                 return;
-
-            try
-            {
-                TcpClient tcp = new TcpClient();
-                tcp.Connect("localhost", Convert.ToInt32(port));
-            }
-            catch
-            {
-                MessageBox.Show(String.Format("Port {0} seems not allowed by Firewall, your remote device may not be able to connect. Please create an Imbound Rule in Firewall to allow this port.", port));
-            }
             
             worker = new Worker();
             thread = new Thread(new ParameterizedThreadStart(worker.DoWork));
@@ -243,6 +230,31 @@ namespace OfficeRemoteService
                     appendLog("Failed to stop service:" + ex.ToString());
                 }
             }
+        }
+
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                Hide();
+            }
+        }
+
+        private void OfficeRemoteNotifyIcon_DoubleClick(object sender, EventArgs e)
+        {
+            Show();
+            WindowState = FormWindowState.Normal;
+        }
+
+        private void restoreToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Show();
+            WindowState = FormWindowState.Normal;
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

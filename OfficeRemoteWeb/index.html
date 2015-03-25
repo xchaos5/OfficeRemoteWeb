@@ -5,6 +5,7 @@
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
 
     <link rel="stylesheet" href="Content/jquery.mobile-1.4.0.css" />
+    <link rel="shortcut icon" href="/images/Office.ico" type="image/x-icon"/>
 
     <script src="Scripts/jquery-1.8.2.min.js"></script>
     <script src="Scripts/hammer-1.0.6.js"></script>
@@ -59,42 +60,23 @@
 
     <div id="mainPage" data-role="page" >
 
-        <div data-role="header" data-theme="b" style="background-color:#FF3C00; border:0px">
-            <a href="" style="top:4px; background-color: transparent; border:0px" class="ui-btn btnHome"><img src="images/office_logo.png" /></a>
-            <h1>Slideshow</h1>
-            <span class="ui-btn ui-icon-plus ui-btn-icon-left ui-corner-all fileinput-button" style="position: absolute; top: -1px; right: 0px; background-color: #FF3C00; border: 0px">
-                <span>Photo</span>
-                <input id="image-picker" type="file" accept="image/*" data-role="none" />
-            </span>
-        </div>
-
-        <div id="swipeme" data-role="content">
-            <span style="vertical-align:middle; color:gray"><h1>Swipe here</h1></span>
-        </div>
-
-        <div data-role="footer" data-theme="a" style="text-align:center;">
-<!--            <span class="ui-btn ui-corner-all fileinput-button">-->
-            <a href="#controlPage" style="top:0px;" data-transition="flip" class="ui-btn">Trackpad</a>
-            <!--</span>-->
-            <span id="btnPlay" class="ui-btn ui-corner-all fileinput-button" style="position: absolute; bottom:2px; left:2px; background-color:transparent; border:0px">
-                <span id="spSlideShow">Play</span>
-            </span>
-        </div>
-
-    </div>
-
-    <div id="controlPage" data-role="page">
-
-        <div data-role="header" data-theme="b" style="background-color:#1E82CC; border:0px">
+        <div data-role="header" data-theme="b" style="background-color: #FF3C00; border: 0px">
             <a href="" style="top: 4px; background-color: transparent; border:0px" class="ui-btn btnHome"><img src="images/office_logo.png" /></a>
-            <h1>Trackpad</h1>
+            <h1>Remote</h1>
             <span id="btnStart" class="ui-btn ui-corner-all fileinput-button" style="position: absolute; top:-2px; right:2px; background-color:transparent; border:0px">
                 <span id="spStart">Start</span>
             </span>
         </div>
 
         <div id="touchme" data-role="content">
-            <span style="vertical-align:middle; color:gray"><h1>Drag here</h1></span>
+            <span style="vertical-align: middle; color: gray"><h1>Drag here</h1></span>
+            
+            <span id="btnBack" class="ui-btn ui-corner-all fileinput-button" style="position: absolute; top: 36px; left: -10px; background-color: transparent; border: 0px">
+                <img src="images/back.png" width="80" style="opacity: 0.4; filter: alpha(opacity=40);" />
+            </span>
+            <span id="btnForward" class="ui-btn ui-corner-all fileinput-button" style="position:absolute; top:36px; right:-10px; background-color:transparent; border:0px">
+                <img src="images/forward.png" width="80" style="opacity: 0.4; filter: alpha(opacity=40);" />
+            </span>
 
             <span id="btnRightClick" class="ui-btn ui-corner-all fileinput-button" style="position:absolute; bottom:36px; right:-10px; background-color:transparent; border:0px">
                 <img src="images/right_click.png" width="80" style="opacity: 0.4; filter: alpha(opacity=40);" />
@@ -102,10 +84,37 @@
         </div>
 
         <div data-role="footer" style="text-align:center">
-            <a href="#mainPage" style="top:0px;" data-transition="flip" class="ui-btn">Slideshow</a>
-            <span id="btnLaser" state="off" class="ui-btn ui-corner-all fileinput-button" style="position: absolute; bottom:2px; left:2px; background-color:transparent; border:0px">
+            <!--<a href="#controlPage" style="top: 0px;" data-transition="fade" class="ui-btn">Slideshow</a>-->
+
+            <span id="btnPlay" class="ui-btn ui-corner-all fileinput-button" style="float: left; background-color: transparent; border: 0px">
+                <span id="spSlideShow">Play</span>
+            </span>
+            <span class="ui-btn ui-icon-plus ui-btn-icon-left fileinput-button" style="float: none; bottom: 2px">
+                <span>Photo</span>
+                <input id="image-picker" type="file" accept="image/*" data-role="none" />
+            </span>
+            <span id="btnLaser" state="off" class="ui-btn ui-corner-all fileinput-button" style="float: right; background-color:transparent; border:0px">
                 <span id="spLaser">Laser</span>
             </span>
+        </div>
+
+    </div>
+
+    <div id="controlPage" data-role="page">
+
+        <div data-role="header" data-theme="b" style="background-color: #1E82CC; border: 0px">
+            <a href="" style="top:4px; background-color: transparent; border:0px" class="ui-btn btnHome"><img src="images/office_logo.png" /></a>
+            <h1>Slideshow</h1>
+        </div>
+
+        <div id="swipeme" data-role="content">
+            <span style="vertical-align:middle; color:gray"><h1>Swipe here</h1></span>
+        </div>
+
+        <div data-role="footer" data-theme="a" style="text-align:center;">
+            <!--<span class="ui-btn ui-corner-all fileinput-button">-->
+            <a href="#mainPage" style="top:0px;" data-transition="fade" class="ui-btn">Trackpad</a>
+            <!--</span>-->
         </div>
 
     </div>
@@ -149,13 +158,8 @@
 
                         $.ajax({
                             type: "POST",
-                            url: "Handlers/OfficeRemoteProxy.ashx",
-                            data: {
-                                type: "upload",
-                                file: e.target.result,
-                                offset_x: 0,
-                                offset_y: 0
-                            }
+                            url: "Handlers/OfficeRemoteProxy.ashx?type=upload",
+                            data: e.target.result
                         }).done(function () {
                             $.mobile.loading("hide");
                             $("#popup").popup();
@@ -175,9 +179,27 @@
                 $.mobile.changePage("#myDialog", { transition: 'pop' });
             });
 
-            $("#btnPlay").click(function (e) {
-                e.stopImmediatePropagation();
-                e.preventDefault();
+            var the_height = ($(window).height() - $("#mainPage").find('[data-role="header"]').height() - $("#mainPage").find('[data-role="footer"]').height() - 121);
+            $("#mainPage").height($(window).height()).find('[data-role="content"]').height(the_height);
+            $("#swipeme").css("line-height", (the_height - 46) + "px");
+            $("#touchme").css("line-height", (the_height - 43) + "px");
+
+            document.ontouchmove = function (event) {
+                event.preventDefault();
+            }
+
+            var sm = document.getElementById('swipeme'),
+                tm = document.getElementById('touchme'),
+                bk = document.getElementById('btnBack'),
+                fw = document.getElementById('btnForward'),
+                rb = document.getElementById('btnRightClick'),
+                bp = document.getElementById('btnPlay'),
+                bl = document.getElementById('btnLaser'),
+                bs = document.getElementById('btnStart');
+
+            Hammer(bp).on('tap', function (event) {
+                event.stopImmediatePropagation();
+                event.gesture.preventDefault();
 
                 var eventType = 'run';
                 if ($("#spSlideShow").text() == "Play") {
@@ -198,9 +220,9 @@
                 });
             });
 
-            $("#btnStart").click(function (e) {
-                e.stopImmediatePropagation();
-                e.preventDefault();
+            Hammer(bs).on('tap', function (event) {
+                event.stopImmediatePropagation();
+                event.gesture.preventDefault();
 
                 $.ajax({
                     url: "Handlers/OfficeRemoteProxy.ashx",
@@ -212,14 +234,14 @@
                 });
             });
 
-            $("#btnLaser").click(function (e) {
-                e.stopImmediatePropagation();
-                e.preventDefault();
+            Hammer(bl).on('tap', function (event) {
+                event.stopImmediatePropagation();
+                event.gesture.preventDefault();
 
                 var eventType = 'laseron';
                 if ($("#spLaser").attr("state") == "off") {
                     eventType = 'laseron';
-                    $("#spLaser").attr("state","on");
+                    $("#spLaser").attr("state", "on");
                     $("#spLaser").addClass("glowBtn");
                 } else {
                     eventType = 'laseroff';
@@ -227,23 +249,6 @@
                     $("#spLaser").removeClass("glowBtn");
                 }
             });
-
-            //$(document).delegate('#mainPage', 'pageshow', function () {
-                
-            //});
-
-            var the_height = ($(window).height() - $("#mainPage").find('[data-role="header"]').height() - $("#mainPage").find('[data-role="footer"]').height() - 121);
-            $("#mainPage").height($(window).height()).find('[data-role="content"]').height(the_height);
-            $("#swipeme").css("line-height", (the_height - 46) + "px");
-            $("#touchme").css("line-height", (the_height - 43) + "px");
-
-            document.ontouchmove = function (event) {
-                event.preventDefault();
-            }
-
-            var sm = document.getElementById('swipeme'),
-                tm = document.getElementById('touchme'),
-                rb = document.getElementById('btnRightClick');
 
             var prevDistanceX = 0;
             var prevDistanceY = 0;
@@ -460,7 +465,38 @@
                 });
             });
 
+            Hammer(bk).on('tap', function (event) {
+                event.stopImmediatePropagation();
+                event.gesture.preventDefault();
+
+                $.ajax({
+                    url: "Handlers/OfficeRemoteProxy.ashx",
+                    data: {
+                        type: "swipe",
+                        direction: "left",
+                        offset_x: 0,
+                        offset_y: 0
+                    }
+                });
+            });
+
+            Hammer(fw).on('tap', function (event) {
+                event.stopImmediatePropagation();
+                event.gesture.preventDefault();
+
+                $.ajax({
+                    url: "Handlers/OfficeRemoteProxy.ashx",
+                    data: {
+                        type: "swipe",
+                        direction: "right",
+                        offset_x: 0,
+                        offset_y: 0
+                    }
+                });
+            });
+
             Hammer(rb).on('tap', function (event) {
+                event.stopImmediatePropagation();
                 event.gesture.preventDefault();
 
                 $.ajax({
