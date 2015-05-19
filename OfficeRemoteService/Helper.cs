@@ -119,39 +119,47 @@ namespace OfficeRemoteService
 
                 if (gesDirection == "left")
                 {
-                    slideIndex = slide.SlideIndex - 1;
-                    if (slideIndex >= 1)
+                    // In case PPT is not started, then slide is null
+                    if (slide != null)
                     {
-                        try
+                        slideIndex = slide.SlideIndex - 1;
+                        if (slideIndex >= 1)
                         {
-                            slide = slides[slideIndex];
-                            slides[slideIndex].Select();
-                        }
-                        catch
-                        {
-                            pptApplication.SlideShowWindows[1].View.Previous();
-                            slide = pptApplication.SlideShowWindows[1].View.Slide;
+                            try
+                            {
+                                slide = slides[slideIndex];
+                                slides[slideIndex].Select();
+                            }
+                            catch
+                            {
+                                pptApplication.SlideShowWindows[1].View.Previous();
+                                slide = pptApplication.SlideShowWindows[1].View.Slide;
+                            }
                         }
                     }
                 }
                 else if (gesDirection == "right")
                 {
-                    slideIndex = slide.SlideIndex + 1;
-                    if (slideIndex > slidescount)
+                    // In case PPT is not started, then slide is null
+                    if (slide != null)
                     {
-
-                    }
-                    else
-                    {
-                        try
+                        slideIndex = slide.SlideIndex + 1;
+                        if (slideIndex > slidescount)
                         {
-                            slide = slides[slideIndex];
-                            slides[slideIndex].Select();
+                            // Already in last slide, do nothing
                         }
-                        catch
+                        else
                         {
-                            pptApplication.SlideShowWindows[1].View.Next();
-                            slide = pptApplication.SlideShowWindows[1].View.Slide;
+                            try
+                            {
+                                slide = slides[slideIndex];
+                                slides[slideIndex].Select();
+                            }
+                            catch
+                            {
+                                pptApplication.SlideShowWindows[1].View.Next();
+                                slide = pptApplication.SlideShowWindows[1].View.Slide;
+                            }
                         }
                     }
                 }
